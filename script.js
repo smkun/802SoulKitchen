@@ -917,48 +917,55 @@ const displayPhotos = (startIndex = 0) => {
     });
 
     if (existingPhotosContainer) {
-        // Smooth transition between old and new photos
+        // Create beautiful crossfade transition
 
-        // Fade out existing photos with staggered timing
-        const existingPhotos = existingPhotosContainer.querySelectorAll('.card-hover');
-        existingPhotos.forEach((photo, index) => {
-            setTimeout(() => {
-                photo.classList.add('opacity-0', 'transform', 'translate-y-4', 'scale-95');
-            }, index * 100);
-        });
+        // Position new container behind existing one
+        newPhotosContainer.style.position = 'absolute';
+        newPhotosContainer.style.top = '0';
+        newPhotosContainer.style.left = '0';
+        newPhotosContainer.style.right = '0';
+        newPhotosContainer.style.zIndex = '1';
 
-        // Wait for fade out to complete, then replace
-        setTimeout(() => {
-            // Clear everything except header
-            photoGallery.innerHTML = '';
-            if (header) photoGallery.appendChild(header);
+        // Make existing container positioned for layering
+        existingPhotosContainer.style.position = 'relative';
+        existingPhotosContainer.style.zIndex = '2';
 
-            // Add new photos container
-            photoGallery.appendChild(newPhotosContainer);
+        // Add new container behind existing one
+        photoGallery.appendChild(newPhotosContainer);
 
-            // Trigger smooth fade-in
-            requestAnimationFrame(() => {
-                newPhotosContainer.classList.remove('opacity-0');
-                newPhotosContainer.classList.add('opacity-100');
+        // Start the beautiful crossfade
+        requestAnimationFrame(() => {
+            // Immediately start fading in new photos with staggered entrance
+            newPhotosContainer.classList.remove('opacity-0');
+            newPhotosContainer.classList.add('opacity-100');
 
-                // Animate individual photos in with staggered, soulful timing
-                const newPhotos = newPhotosContainer.querySelectorAll('.card-hover');
-                newPhotos.forEach((photo, index) => {
-                    setTimeout(() => {
-                        photo.classList.remove('opacity-0', 'translate-y-4');
-                        photo.classList.add('opacity-100', 'translate-y-0');
-                    }, index * 200 + 300); // Extra delay for soulful entrance
-                });
+            const newPhotos = newPhotosContainer.querySelectorAll('.card-hover');
+            newPhotos.forEach((photo, index) => {
+                setTimeout(() => {
+                    photo.classList.remove('opacity-0', 'translate-y-4');
+                    photo.classList.add('opacity-100', 'translate-y-0');
+                }, index * 150); // Slightly faster entrance
             });
 
-            // Add controls after transition
-            setTimeout(() => {
-                if (availablePhotos.length > photosPerPage) {
-                    addGalleryControls();
-                }
-            }, 1500);
+            // Simultaneously fade out old photos with dreamy effect
+            const existingPhotos = existingPhotosContainer.querySelectorAll('.card-hover');
+            existingPhotos.forEach((photo, index) => {
+                setTimeout(() => {
+                    photo.style.transition = 'all 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                    photo.style.opacity = '0';
+                    photo.style.transform = 'translateY(-20px) scale(0.95)';
+                    photo.style.filter = 'blur(8px)';
+                }, index * 120 + 800); // Start after new photos begin appearing
+            });
 
-        }, existingPhotos.length * 100 + 400); // Wait for all photos to fade out
+            // Clean up after crossfade completes
+            setTimeout(() => {
+                // Remove old container and reset positioning
+                existingPhotosContainer.remove();
+                newPhotosContainer.style.position = 'static';
+                newPhotosContainer.style.zIndex = 'auto';
+            }, 2500); // Wait for all transitions to complete
+        });
 
     } else {
         // First load - no existing photos to transition from
@@ -980,12 +987,7 @@ const displayPhotos = (startIndex = 0) => {
             });
         }, 100);
 
-        // Add controls after initial load
-        setTimeout(() => {
-            if (availablePhotos.length > photosPerPage) {
-                addGalleryControls();
-            }
-        }, 2000);
+        // No manual controls - auto-cycling only
     }
 };
 
