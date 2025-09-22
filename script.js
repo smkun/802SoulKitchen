@@ -384,7 +384,7 @@ const renderSidebarNextEvent = (events) => {
             <div class="flex items-start mb-2">
                 <svg class="w-4 h-4 mr-2 mt-0.5 text-brand-red flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 616 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                 </svg>
                 <span class="text-brand-white/90">${nextEvent.location}</span>
             </div>
@@ -539,7 +539,7 @@ const renderEvents = (events) => {
                 ${dateTimeHTML}
                 <div class="flex items-center text-lg text-brand-white font-semibold">
                     <div class="w-8 h-8 flex items-center justify-center bg-brand-dark/10 rounded-lg">
-                        <svg class="w-5 h-5 text-brand-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 616 0z"></path></svg>
+                        <svg class="w-5 h-5 text-brand-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     </div>
                     <div class="flex items-center flex-1 -ml-5">
                         <span><span class="text-brand-red">Location:</span> ${event.location}</span>
@@ -925,11 +925,16 @@ const photosPerPage = 6;
 
 const loadAvailablePhotos = async () => {
     const photoExtensions = ['jpg', 'jpeg', 'png', 'webp'];
-    const maxPhotos = 50; // Check up to 50 photos
     availablePhotos = [];
 
-    // Check for available photos
-    for (let i = 1; i <= maxPhotos; i++) {
+    // Dynamically find all available photos by checking sequentially until gap
+    let i = 1;
+    let consecutiveMisses = 0;
+    const maxConsecutiveMisses = 5; // Stop after 5 consecutive missing numbers
+
+    while (consecutiveMisses < maxConsecutiveMisses) {
+        let found = false;
+
         for (const ext of photoExtensions) {
             const photoPath = `PHOTOS/${i}.${ext}`;
 
@@ -943,12 +948,20 @@ const loadAvailablePhotos = async () => {
 
                 if (photoExists) {
                     availablePhotos.push(photoPath);
+                    found = true;
+                    consecutiveMisses = 0; // Reset counter
                     break; // Found this number, move to next
                 }
             } catch (error) {
                 // Photo doesn't exist, continue
             }
         }
+
+        if (!found) {
+            consecutiveMisses++;
+        }
+
+        i++;
     }
 
     if (availablePhotos.length > 0) {
