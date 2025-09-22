@@ -1,0 +1,284 @@
+/* Custom color palette for 802 Soul Kitchen */
+:root {
+    --brand-white: #fdfcfd;
+    --brand-red: #da2c2b;
+    --brand-orange: #f38c2c;
+    --brand-dark: #060b22;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Logo glow effect */
+.logo-glow {
+    filter: drop-shadow(0 0 10px rgba(243, 140, 44, 0.3));
+    transition: all 0.3s ease;
+}
+
+.logo-glow:hover {
+    filter: drop-shadow(0 0 20px rgba(243, 140, 44, 0.6));
+    transform: scale(1.05);
+}
+
+/* Floating animation for admin FAB */
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+}
+
+.floating {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Slide in animations */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-in {
+    animation: slideInUp 0.6s ease-out;
+}
+
+/* Card hover effects */
+.card-hover {
+    transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Gradient text effect */
+.gradient-text {
+    background: linear-gradient(135deg, var(--brand-red), var(--brand-orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Pulse animation for buttons */
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(218, 44, 43, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(218, 44, 43, 0); }
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+/* Modern glassmorphism effect with brand colors for dark background */
+.glass-effect {
+    background: linear-gradient(135deg, rgba(6, 11, 34, 0.8) 0%, rgba(243, 140, 44, 0.1) 50%, rgba(218, 44, 43, 0.1) 100%);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(243, 140, 44, 0.3);
+    box-shadow: 0 8px 32px rgba(218, 44, 43, 0.2);
+}
+
+/* Smooth transitions for all interactive elements */
+button, .card-hover, input, textarea {
+    transition: all 0.3s ease;
+}
+
+/* Enhanced button hover effects */
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.3);
+}
+
+/* Parallax-like background effect */
+.parallax-bg {
+    background: linear-gradient(135deg, #060b22 0%, #0a0f2e 50%, #060b22 100%);
+    background-size: 200% 200%;
+    animation: gradientShift 8s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Three-column layout responsive design */
+@media (max-width: 1280px) {
+    /* Stack layout on smaller screens */
+    .flex.min-h-screen {
+        flex-direction: column !important;
+    }
+
+    .flex.min-h-screen > div:first-child,
+    .flex.min-h-screen > div:last-child {
+        /* Left and right sidebars */
+        position: relative !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+    }
+
+    .flex.min-h-screen > div:nth-child(2) {
+        /* Middle content */
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
+    }
+}
+
+/* Photo gallery enhancements */
+#photo-gallery img {
+    transition: transform 0.3s ease;
+}
+
+#photo-gallery img:hover {
+    transform: scale(1.02);
+}
+
+/* Scrollbar styling for sidebars */
+.overflow-y-auto::-webkit-scrollbar {
+    width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: rgba(6, 11, 34, 0.3);
+    border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: rgba(243, 140, 44, 0.5);
+    border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: rgba(243, 140, 44, 0.7);
+}
+
+/* Enhanced mobile responsive for sidebars */
+@media (max-width: 768px) {
+    .w-80 {
+        width: 100% !important;
+        padding: 1rem !important;
+    }
+
+    .ml-80, .mr-80 {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+}
+
+/* Photo gallery soulful animations */
+@keyframes soulfulFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+        filter: blur(3px);
+    }
+    50% {
+        opacity: 0.7;
+        transform: translateY(10px) scale(0.98);
+        filter: blur(1px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes soulfulFadeOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+    50% {
+        opacity: 0.3;
+        transform: translateY(-10px) scale(0.98);
+        filter: blur(1px);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+        filter: blur(3px);
+    }
+}
+
+@keyframes gentleFloat {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-2px);
+    }
+}
+
+/* Enhanced photo gallery styling */
+#photo-gallery .photos-container {
+    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#photo-gallery .card-hover {
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
+}
+
+#photo-gallery .card-hover:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 24px rgba(243, 140, 44, 0.3);
+    animation: gentleFloat 3s ease-in-out infinite;
+}
+
+#photo-gallery img {
+    transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, filter;
+}
+
+#photo-gallery .card-hover:hover img {
+    filter: brightness(1.1) saturate(1.1);
+}
+
+/* Gallery controls soulful styling */
+.gallery-controls {
+    transition: all 0.5s ease-in-out;
+}
+
+.gallery-controls button {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.gallery-controls button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(218, 44, 43, 0.3);
+}
+
+.gallery-controls button:active {
+    transform: translateY(0);
+    transition: transform 0.1s;
+}
+
+/* Smooth scrolling for the gallery */
+#photo-gallery {
+    scroll-behavior: smooth;
+}
+
+/* Add subtle breathing animation to the gallery */
+@keyframes breathe {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.005);
+    }
+}
+
+.photos-container:not(:hover) {
+    animation: breathe 4s ease-in-out infinite;
+}
