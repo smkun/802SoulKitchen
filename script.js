@@ -393,10 +393,80 @@ const renderSidebarNextEvent = (events) => {
     `;
 };
 
+// Generate schema markup for events
+const generateEventSchema = (events) => {
+    const activeEvents = events.filter(isEventActive);
+    if (activeEvents.length === 0) return;
+
+    // Remove existing event schema
+    const existingSchema = document.getElementById('event-schema');
+    if (existingSchema) existingSchema.remove();
+
+    // Create new schema for events
+    const eventSchemas = activeEvents.slice(0, 5).map(event => { // Limit to 5 events for performance
+        const firstDateTime = event.dateTimes?.[0];
+        if (!firstDateTime) return null;
+
+        const startDate = new Date(firstDateTime.date + 'T00:00:00');
+        let endDate = new Date(startDate);
+
+        // Set end time if available
+        if (firstDateTime.endTime) {
+            const [hours, minutes] = firstDateTime.endTime.split(':').map(Number);
+            endDate.setHours(hours, minutes);
+        } else {
+            endDate.setHours(23, 59); // Default to end of day
+        }
+
+        return {
+            "@type": "Event",
+            "name": event.name,
+            "description": event.description || `Join 802 Soul Kitchen at ${event.name} for authentic soul food.`,
+            "startDate": startDate.toISOString(),
+            "endDate": endDate.toISOString(),
+            "location": {
+                "@type": "Place",
+                "name": event.location,
+                "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": event.location.includes(',') ? event.location.split(',')[0] : event.location,
+                    "addressRegion": "VT",
+                    "addressCountry": "US"
+                }
+            },
+            "organizer": {
+                "@type": "Organization",
+                "name": "802 Soul Kitchen",
+                "url": "https://www.802soulkitchen.com"
+            },
+            "offers": {
+                "@type": "Offer",
+                "description": "Authentic soul food including fried chicken, ribs, mac & cheese, and more",
+                "priceCurrency": "USD",
+                "availability": "https://schema.org/InStock"
+            }
+        };
+    }).filter(Boolean);
+
+    if (eventSchemas.length > 0) {
+        const schemaScript = document.createElement('script');
+        schemaScript.type = 'application/ld+json';
+        schemaScript.id = 'event-schema';
+        schemaScript.textContent = JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": eventSchemas
+        });
+        document.head.appendChild(schemaScript);
+    }
+};
+
 // Render events from Firestore
 const renderEvents = (events) => {
     // Filter to show only active/future events
     const activeEvents = events.filter(isEventActive);
+
+    // Generate schema markup for SEO
+    generateEventSchema(events);
 
     // Update sidebar with next event
     renderSidebarNextEvent(events);
