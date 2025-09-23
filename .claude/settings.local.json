@@ -1,7 +1,20 @@
 {
   "permissions": {
     "allow": [
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Bash(choco install:*)",
+      "Bash(winget search:*)",
+      "Bash(winget install:*)",
+      "Bash(refreshenv)",
+      "Bash(magick:*)",
+      "Read(//z/**)",
+      "Bash(export:*)",
+      "Read(//c/Users/**)",
+      "Bash(cwebp:*)",
+      "Bash(mkdir:*)",
+      "Bash(chmod:*)",
+      "Bash(./optimize_images.sh)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []

@@ -219,7 +219,7 @@ button:hover {
     }
 }
 
-/* Enhanced photo gallery styling */
+/* Enhanced photo gallery styling with optimization support */
 #photo-gallery .photos-container {
     transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
     width: 100%;
@@ -242,13 +242,32 @@ button:hover {
     animation: gentleFloat 3s ease-in-out infinite;
 }
 
+/* Optimized image styling with lazy loading support */
 #photo-gallery img {
     transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform, filter;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: optimize-contrast;
 }
 
 #photo-gallery .card-hover:hover img {
     filter: brightness(1.1) saturate(1.1);
+}
+
+/* Picture element support */
+#photo-gallery picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* Optimized image performance indicators */
+#photo-gallery img[data-optimized="true"] {
+    border-bottom: 2px solid rgba(34, 197, 94, 0.3);
+}
+
+#photo-gallery img[data-format="webp"] {
+    border-bottom: 2px solid rgba(34, 197, 94, 0.5);
 }
 
 /* Gallery controls soulful styling */

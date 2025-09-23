@@ -918,46 +918,144 @@ saveMenuItemBtn.addEventListener('click', async () => {
     }
 });
 
-// Photo gallery functionality with cycling
+// Photo gallery functionality with cycling and optimized images
 let availablePhotos = [];
 let currentPhotoIndex = 0;
 const photosPerPage = 6;
 
-const loadAvailablePhotos = async () => {
-    const photoExtensions = ['jpg', 'jpeg', 'png', 'webp'];
-    availablePhotos = [];
+// Image optimization paths
+const imageFormats = {
+    webp: 'optimized/webp',
+    optimized: 'optimized',
+    thumbnails: 'optimized/thumbnails',
+    medium: 'optimized/medium',
+    original: 'PHOTOS'
+};
 
-    // Dynamically find all available photos by checking sequentially until gap
-    let i = 1;
-    let consecutiveMisses = 0;
-    const maxConsecutiveMisses = 5; // Stop after 5 consecutive missing numbers
+// Check if browser supports WebP
+const supportsWebP = () => {
+    return new Promise((resolve) => {
+        const webP = new Image();
+        webP.onload = webP.onerror = () => resolve(webP.height === 2);
+        webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
+    });
+};
 
-    while (consecutiveMisses < maxConsecutiveMisses) {
-        let found = false;
+const getOptimalImagePath = async (imageNumber, size = 'medium') => {
+    const hasWebpSupport = await supportsWebP();
+    const formats = hasWebpSupport ? ['webp', 'optimized', 'original'] : ['optimized', 'original'];
+    const extensions = ['jpg', 'jpeg', 'png'];
 
-        for (const ext of photoExtensions) {
-            const photoPath = `PHOTOS/${i}.${ext}`;
+    // Try WebP first if supported
+    if (hasWebpSupport && size !== 'thumbnails') {
+        const webpPath = `${imageFormats.webp}/${imageNumber}.webp`;
+        if (await checkImageExists(webpPath)) {
+            return {
+                path: webpPath,
+                format: 'webp',
+                size: size
+            };
+        }
+    }
 
-            try {
-                const img = new Image();
-                const photoExists = await new Promise((resolve) => {
-                    img.onload = () => resolve(true);
-                    img.onerror = () => resolve(false);
-                    img.src = photoPath;
-                });
+    // Try optimized version based on size preference
+    const sizeFolder = imageFormats[size] || imageFormats.medium;
+    for (const ext of extensions) {
+        const optimizedPath = `${sizeFolder}/${imageNumber}.${ext}`;
+        if (await checkImageExists(optimizedPath)) {
+            return {
+                path: optimizedPath,
+                format: ext,
+                size: size
+            };
+        }
+    }
 
-                if (photoExists) {
-                    availablePhotos.push(photoPath);
-                    found = true;
-                    consecutiveMisses = 0; // Reset counter
-                    break; // Found this number, move to next
-                }
-            } catch (error) {
-                // Photo doesn't exist, continue
+    // Fallback to original
+    for (const ext of extensions) {
+        const originalPath = `${imageFormats.original}/${imageNumber}.${ext}`;
+        if (await checkImageExists(originalPath)) {
+            return {
+                path: originalPath,
+                format: ext,
+                size: 'original'
+            };
+        }
+    }
+
+    return null;
+};
+
+const checkImageExists = async (imagePath) => {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = imagePath;
+    });
+};
+
+const createResponsiveImage = (photoInfo) => {
+    const picture = document.createElement('picture');
+
+    // Add WebP source if available
+    if (photoInfo.format === 'webp' || photoInfo.size !== 'original') {
+        const webpSource = document.createElement('source');
+        webpSource.type = 'image/webp';
+        webpSource.srcset = `${imageFormats.webp}/${photoInfo.number}.webp`;
+        picture.appendChild(webpSource);
+    }
+
+    // Create main img element with lazy loading
+    const img = document.createElement('img');
+    img.src = photoInfo.path;
+    img.alt = '802 Soul Kitchen - Delicious Soul Food';
+    img.className = 'w-full h-48 object-cover transition-all duration-700';
+    img.loading = 'lazy'; // Native lazy loading
+    img.decoding = 'async'; // Async image decoding
+
+    // Add responsive sizes
+    img.sizes = '(max-width: 320px) 280px, (max-width: 640px) 320px, 280px';
+
+    // Add error handling with fallback
+    img.onerror = async () => {
+        // Try fallback to original if optimized fails
+        if (photoInfo.size !== 'original') {
+            const fallbackInfo = await getOptimalImagePath(photoInfo.number, 'original');
+            if (fallbackInfo) {
+                img.src = fallbackInfo.path;
             }
         }
+    };
 
-        if (!found) {
+    // Add performance hints
+    if (photoInfo.format === 'webp') {
+        img.setAttribute('data-format', 'webp');
+        img.setAttribute('data-optimized', 'true');
+    } else if (photoInfo.size === 'medium' || photoInfo.size === 'optimized') {
+        img.setAttribute('data-optimized', 'true');
+    }
+
+    picture.appendChild(img);
+    return picture;
+};
+
+const loadAvailablePhotos = async () => {
+    availablePhotos = [];
+    let i = 1;
+    let consecutiveMisses = 0;
+    const maxConsecutiveMisses = 5;
+
+    while (consecutiveMisses < maxConsecutiveMisses) {
+        const imageInfo = await getOptimalImagePath(i, 'medium');
+
+        if (imageInfo) {
+            availablePhotos.push({
+                number: i,
+                ...imageInfo
+            });
+            consecutiveMisses = 0;
+        } else {
             consecutiveMisses++;
         }
 
@@ -988,14 +1086,16 @@ const displayPhotos = (startIndex = 0) => {
     const newPhotosContainer = document.createElement('div');
     newPhotosContainer.className = 'space-y-4 photos-container opacity-0 transition-all duration-1000 ease-in-out';
 
-    // Add photos to new container
-    photosToShow.forEach((photoPath, index) => {
+    // Add photos to new container with modern image optimization
+    photosToShow.forEach((photoInfo, index) => {
         const photoDiv = document.createElement('div');
         photoDiv.className = 'rounded-lg overflow-hidden shadow-lg hover:scale-105 transition-all duration-500 card-hover transform translate-y-4 opacity-0';
         photoDiv.style.transitionDelay = `${index * 150}ms`;
-        photoDiv.innerHTML = `
-            <img src="${photoPath}" alt="802 Soul Kitchen Photo" class="w-full h-48 object-cover transition-all duration-700">
-        `;
+
+        // Create picture element for optimal format delivery
+        const pictureElement = createResponsiveImage(photoInfo);
+        photoDiv.appendChild(pictureElement);
+
         newPhotosContainer.appendChild(photoDiv);
     });
 
