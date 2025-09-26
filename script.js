@@ -1059,6 +1059,13 @@ const displayPhotos = (startIndex = 0) => {
     const photoGallery = document.getElementById('photo-gallery');
     if (!photoGallery || availablePhotos.length === 0) return;
 
+    // Prune any older containers so we never keep more than 1
+    const allContainers = photoGallery.querySelectorAll('.photos-container');
+    if (allContainers.length > 1) {
+        // keep the last one, drop the rest
+        allContainers.forEach((c, i) => { if (i < allContainers.length - 1) c.remove(); });
+    }
+
     // Keep header
     const header = photoGallery.querySelector('h3');
     const existingPhotosContainer = photoGallery.querySelector('.photos-container');
@@ -1130,13 +1137,28 @@ const displayPhotos = (startIndex = 0) => {
                 }, 1500 + index * 150); // Start well after old photos are completely gone
             });
 
-            // Clean up after crossfade completes
+            // Clean up after crossfade completes - use event-based cleanup
+            const onFadeOutDone = (e) => {
+                if (e.target === existingPhotosContainer) {
+                    existingPhotosContainer.remove();
+                    newPhotosContainer.style.position = 'static';
+                    newPhotosContainer.style.zIndex = 'auto';
+                    existingPhotosContainer.removeEventListener('transitionend', onFadeOutDone);
+                }
+            };
+
+            // Attach once, then start fade logic
+            existingPhotosContainer.addEventListener('transitionend', onFadeOutDone);
+
+            // Safety hatch: if event doesn't fire within 4s, clean up anyway
             setTimeout(() => {
-                // Remove old container and reset positioning
-                existingPhotosContainer.remove();
-                newPhotosContainer.style.position = 'static';
-                newPhotosContainer.style.zIndex = 'auto';
-            }, 2500); // Wait for all transitions to complete
+                if (existingPhotosContainer.parentNode) {
+                    existingPhotosContainer.remove();
+                    newPhotosContainer.style.position = 'static';
+                    newPhotosContainer.style.zIndex = 'auto';
+                }
+                existingPhotosContainer.removeEventListener('transitionend', onFadeOutDone);
+            }, 4000);
         });
 
     } else {
@@ -1216,6 +1238,23 @@ const initializePhotoGallery = () => {
 const loadPhotoGallery = () => {
     loadAvailablePhotos();
 };
+
+// Pause gallery interval when tab is hidden to prevent stacking
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        if (galleryInterval) {
+            clearInterval(galleryInterval);
+            galleryInterval = null;
+        }
+    } else {
+        if (!galleryInterval && availablePhotos.length > photosPerPage) {
+            galleryInterval = setInterval(() => {
+                currentPhotoIndex = (currentPhotoIndex + photosPerPage) % availablePhotos.length;
+                displayPhotos(currentPhotoIndex);
+            }, 8000);
+        }
+    }
+});
 
 // Initialize the application
 loadMenuItems();
