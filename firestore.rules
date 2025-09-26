@@ -1,0 +1,116 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Anyone can read events (site shows upcoming events); only admins write
+    match /events/{eventId} {
+      allow read: if true;
+
+      allow create: if isAdmin() && validEventOnCreate();
+      allow update: if isAdmin() && validEventOnUpdate();
+      allow delete: if isAdmin(); // no schema checks on delete
+
+      function isAdmin() {
+        return request.auth != null
+          && request.auth.token.email_verified == true
+          && request.auth.token.email in [
+            "802soulkitchen@gmail.com",
+            "scottkunian@gmail.com"
+          ];
+      }
+
+      // ---- Event schema helpers ----
+      function requiredEventKeys() {
+        return ['name','location','dateTimes','date'];
+      }
+      function allowedEventKeys() {
+        return ['name','location','description','dateTimes','date'];
+      }
+      function dateTimesOk(arr) {
+        // Each entry: { date: 'YYYY-MM-DD', startTime?: 'HH:MM', endTime?: 'HH:MM', time?: string (legacy) }
+        return arr is list
+          && arr.size() > 0
+          && arr.every(dt, dt is map
+              && ('date' in dt) && (dt.date is string) && dt.date.size() == 10
+              && (!('startTime' in dt) || (dt.startTime is string))
+              && (!('endTime' in dt) || (dt.endTime is string))
+              && (!('time' in dt) || (dt.time is string))
+          );
+      }
+      function eventBasicsOk(d) {
+        return d.name is string && d.name.size() > 0 && d.name.size() <= 100
+            && d.location is string && d.location.size() > 0 && d.location.size() <= 200
+            && (!('description' in d) || (d.description is string && d.description.size() <= 1000))
+            && d.date is string && d.date.size() == 10
+            && dateTimesOk(d.dateTimes);
+      }
+      function validEventOnCreate() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(allowedEventKeys())
+            && requiredEventKeys().toSet().difference(d.keys().toSet()).size() == 0
+            && eventBasicsOk(d);
+      }
+      function validEventOnUpdate() {
+        let d = request.resource.data;
+        // Required fields must remain present
+        let hasRequired = requiredEventKeys().toSet().difference(d.keys().toSet()).size() == 0;
+        return d.keys().hasOnly(allowedEventKeys())
+            && hasRequired
+            && eventBasicsOk(d);
+      }
+    }
+
+    // Public read menu; only admins write. Categories limited to your UI's set.
+    match /menu/{itemId} {
+      allow read: if true;
+
+      allow create: if isAdmin() && validMenuOnCreate();
+      allow update: if isAdmin() && validMenuOnUpdate();
+      allow delete: if isAdmin();
+
+      function isAdmin() {
+        return request.auth != null
+          && request.auth.token.email_verified == true
+          && request.auth.token.email in [
+            "802soulkitchen@gmail.com",
+            "scottkunian@gmail.com"
+          ];
+      }
+
+      // ---- Menu schema helpers ----
+      function requiredMenuKeys() {
+        return ['name','category'];
+      }
+      function allowedMenuKeys() {
+        return ['name','description','category','order'];
+      }
+      function categoryOk(cat) {
+        return cat in ['Mains','Combos','Sides','Drinks','Dessert'];
+      }
+      function menuBasicsOk(d) {
+        return d.name is string && d.name.size() > 0 && d.name.size() <= 100
+            && categoryOk(d.category)
+            && (!('description' in d) || (d.description is string && d.description.size() <= 500))
+            && (!('order' in d) || (d.order is int && d.order >= 0 && d.order <= 999));
+      }
+      function validMenuOnCreate() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(allowedMenuKeys())
+            && requiredMenuKeys().toSet().difference(d.keys().toSet()).size() == 0
+            && menuBasicsOk(d);
+      }
+      function validMenuOnUpdate() {
+        let d = request.resource.data;
+        let hasRequired = requiredMenuKeys().toSet().difference(d.keys().toSet()).size() == 0;
+        return d.keys().hasOnly(allowedMenuKeys())
+            && hasRequired
+            && menuBasicsOk(d);
+      }
+    }
+  }
+}
