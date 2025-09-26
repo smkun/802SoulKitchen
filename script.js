@@ -26,6 +26,7 @@ const AUTHORIZED_ADMINS = [
 let loggedIn = false;
 let currentUser = null;
 let currentEvents = []; // To store the latest events list
+let galleryInterval = null; // Track the gallery cycling interval
 
 const adminFab = document.getElementById('admin-fab');
 const adminModal = document.getElementById('admin-modal');
@@ -1209,9 +1210,15 @@ const addGalleryControls = () => {
 const initializePhotoGallery = () => {
     displayPhotos(0);
 
+    // Clear any existing interval before creating a new one
+    if (galleryInterval) {
+        clearInterval(galleryInterval);
+        galleryInterval = null;
+    }
+
     // Auto-cycle every 8 seconds if there are more photos than displayed
     if (availablePhotos.length > photosPerPage) {
-        setInterval(() => {
+        galleryInterval = setInterval(() => {
             currentPhotoIndex = (currentPhotoIndex + photosPerPage) % availablePhotos.length;
             displayPhotos(currentPhotoIndex);
         }, 8000);
