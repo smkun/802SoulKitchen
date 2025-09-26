@@ -71,6 +71,8 @@ onAuthStateChanged(auth, (user) => {
         authError.textContent = '';
         authSection.classList.add('hidden');
         adminMainSection.classList.remove('hidden');
+        // Hide the permanent X button when logged in
+        document.getElementById('modal-close-x-btn').style.display = 'none';
         showEventsTab(); // Show events tab by default
         renderEvents(currentEvents); // Re-render events without admin buttons
         renderEventsAdmin(currentEvents); // Show events in admin panel
@@ -79,6 +81,8 @@ onAuthStateChanged(auth, (user) => {
         loggedIn = false;
         authSection.classList.remove('hidden');
         adminMainSection.classList.add('hidden');
+        // Show the permanent X button when not logged in
+        document.getElementById('modal-close-x-btn').style.display = 'block';
         renderEvents(currentEvents); // Re-render events to hide admin buttons
         if (user && !isAuthorizedAdmin(user)) {
             authError.textContent = `Access denied. "${user.email}" is not authorized.`;
@@ -551,7 +555,7 @@ const renderEvents = (events) => {
                     </div>
                 </div>
             </div>
-            ${event.description ? `<div class="mt-6 p-4 bg-brand-orange/20 rounded-lg">
+            ${event.description ? `<div class="mt-3 p-4 bg-brand-orange/20 rounded-lg">
                 <p class="text-brand-white font-medium leading-relaxed">${event.description}</p>
             </div>` : ''}
         `;
@@ -597,41 +601,28 @@ const renderMenu = (menuItems) => {
         categorizedItems[category].sort((a, b) => (a.order || 0) - (b.order || 0));
     });
 
-    let menuHTML = '';
+    let menuHTML = '<div class="menu-grid">';
 
     categories.forEach(category => {
         if (categorizedItems[category] && categorizedItems[category].length > 0) {
-            if (category === 'Sides' && categories.slice(2).some(cat => categorizedItems[cat] && categorizedItems[cat].length > 0)) {
-                // Start grid for Sides, Drinks, Dessert
-                if (category === 'Sides') {
-                    menuHTML += '<div class="grid md:grid-cols-3 gap-x-8 gap-y-6">';
-                }
-                menuHTML += '<div>';
-            } else {
-                menuHTML += '<div class="mb-6">';
-            }
+            menuHTML += '<div class="menu-category">';
 
-            menuHTML += `<h3 class="text-xl font-bold mb-2 border-b border-brand-orange/30 pb-2 text-brand-orange">${category}</h3>`;
-            menuHTML += '<ul class="space-y-2 pt-2 text-brand-white">';
+            menuHTML += `<h3 class="text-xl font-bold mb-4 text-brand-orange">${category}</h3>`;
+            menuHTML += '<ul class="menu-bullet-list">';
 
             categorizedItems[category].forEach(item => {
-                menuHTML += '<li>';
                 if (item.description) {
-                    menuHTML += `<strong>${item.name}:</strong> ${item.description}`;
+                    menuHTML += `<li class="menu-bullet-item">• <strong class="text-brand-white">${item.name}</strong><br><span class="text-brand-white/80 text-sm ml-3">${item.description}</span></li>`;
                 } else {
-                    menuHTML += item.name;
+                    menuHTML += `<li class="menu-bullet-item">• <span class="text-brand-white font-medium">${item.name}</span></li>`;
                 }
-                menuHTML += '</li>';
             });
 
             menuHTML += '</ul></div>';
         }
     });
 
-    // Close grid if it was opened
-    if (categories.slice(2).some(cat => categorizedItems[cat] && categorizedItems[cat].length > 0)) {
-        menuHTML += '</div>';
-    }
+    menuHTML += '</div>';
 
     menuContainer.innerHTML = menuHTML || '<p class="text-brand-white text-center">No menu items available.</p>';
 };
@@ -746,7 +737,7 @@ const renderEventsAdmin = (events) => {
                     <p class="text-sm text-brand-dark/70">${formattedDate}</p>
                     ${event.time ? `<p class="text-sm text-brand-dark/70">Time: ${event.time}</p>` : ''}
                     <p class="text-sm text-brand-dark/70">Location: ${event.location}</p>
-                    ${event.description ? `<p class="text-sm text-brand-dark mt-1">${event.description}</p>` : ''}
+                    ${event.description ? `<p class="text-sm text-brand-dark font-medium">${event.description}</p>` : ''}
                 </div>
                 <div class="flex gap-2 ml-4">
                     <button class="edit-event-btn text-brand-orange hover:text-brand-red text-sm font-medium" data-id="${event.id}">✏️ Edit</button>
@@ -1043,24 +1034,20 @@ const createResponsiveImage = (photoInfo) => {
 
 const loadAvailablePhotos = async () => {
     availablePhotos = [];
-    let i = 1;
-    let consecutiveMisses = 0;
-    const maxConsecutiveMisses = 5;
 
-    while (consecutiveMisses < maxConsecutiveMisses) {
-        const imageInfo = await getOptimalImagePath(i, 'medium');
+    // Pre-define known image numbers to avoid 404s
+    // This should match the actual images in your PHOTOS directory
+    const knownImages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+
+    for (const imageNum of knownImages) {
+        const imageInfo = await getOptimalImagePath(imageNum, 'medium');
 
         if (imageInfo) {
             availablePhotos.push({
-                number: i,
+                number: imageNum,
                 ...imageInfo
             });
-            consecutiveMisses = 0;
-        } else {
-            consecutiveMisses++;
         }
-
-        i++;
     }
 
     if (availablePhotos.length > 0) {
@@ -1123,23 +1110,24 @@ const displayPhotos = (startIndex = 0) => {
             newPhotosContainer.classList.remove('opacity-0');
             newPhotosContainer.classList.add('opacity-100');
 
+            // First fade out old photos
+            const existingPhotos = existingPhotosContainer.querySelectorAll('.card-hover');
+            existingPhotos.forEach((photo, index) => {
+                setTimeout(() => {
+                    photo.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+                    photo.style.opacity = '0';
+                    photo.style.transform = 'translateY(-20px) scale(0.95)';
+                    photo.style.filter = 'blur(8px)';
+                }, index * 100); // Start immediately
+            });
+
+            // Then fade in new photos after old ones are completely faded
             const newPhotos = newPhotosContainer.querySelectorAll('.card-hover');
             newPhotos.forEach((photo, index) => {
                 setTimeout(() => {
                     photo.classList.remove('opacity-0', 'translate-y-4');
                     photo.classList.add('opacity-100', 'translate-y-0');
-                }, index * 150); // Slightly faster entrance
-            });
-
-            // Simultaneously fade out old photos with dreamy effect
-            const existingPhotos = existingPhotosContainer.querySelectorAll('.card-hover');
-            existingPhotos.forEach((photo, index) => {
-                setTimeout(() => {
-                    photo.style.transition = 'all 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
-                    photo.style.opacity = '0';
-                    photo.style.transform = 'translateY(-20px) scale(0.95)';
-                    photo.style.filter = 'blur(8px)';
-                }, index * 120 + 800); // Start after new photos begin appearing
+                }, 1500 + index * 150); // Start well after old photos are completely gone
             });
 
             // Clean up after crossfade completes

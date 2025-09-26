@@ -80,29 +80,15 @@
             rel="canonical"
             href="https://www.802soulkitchen.com/" />
 
-        <!-- Tailwind CSS via CDN for easy deployment - consider Tailwind CLI for production builds -->
-        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Tailwind CSS removed to eliminate production warnings and MutationObserver errors -->
+        <!-- Using custom CSS in styles.css for similar styling -->
         <link
             href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
             rel="stylesheet" />
         <link
             rel="stylesheet"
             href="styles.css" />
-        <script>
-            // Custom color palette for 802 Soul Kitchen
-            tailwind.config = {
-                theme: {
-                    extend: {
-                        colors: {
-                            "brand-white": "#fdfcfd",
-                            "brand-red": "#da2c2b",
-                            "brand-orange": "#f38c2c",
-                            "brand-dark": "#060b22",
-                        },
-                    },
-                },
-            };
-        </script>
+        <!-- Tailwind config removed - using CSS variables in styles.css instead -->
 
         <!-- Schema.org Local Business Markup -->
         <script type="application/ld+json">
@@ -304,7 +290,7 @@
                     </h3>
                     <div
                         id="sidebar-next-event"
-                        class="text-sm">
+                        class="text-sm bg-brand-dark/50 p-3 rounded-lg border border-brand-orange/20">
                         <!-- Next event will be dynamically loaded here -->
                         <div class="text-brand-white/70 italic">
                             <p>Loading next event...</p>
