@@ -1,0 +1,14 @@
+{
+  "name": "802soulkitchen",
+  "version": "1.0.0",
+  "description": "This folder contains development tools and files that are **NOT** needed for website deployment.",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-css": "tailwindcss -i input.css -o styles.css --watch",
+    "build": "tailwindcss -i input.css -o styles.css --minify"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

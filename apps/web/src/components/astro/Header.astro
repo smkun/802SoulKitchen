@@ -1,0 +1,57 @@
+---
+// Header component for 802 Soul Kitchen
+---
+
+<header class="bg-brand-dark text-brand-white shadow-lg">
+  <nav class="container mx-auto px-4 py-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <img
+          src="/assets/802Logo.png"
+          alt="802 Soul Kitchen Logo"
+          class="h-12 w-auto"
+        />
+        <h1 class="text-xl font-bold">802 Soul Kitchen</h1>
+      </div>
+
+      <div class="hidden md:flex space-x-6">
+        <a href="/" class="hover:text-brand-orange transition-colors">Home</a>
+        <a href="/menu" class="hover:text-brand-orange transition-colors">Menu</a>
+        <a href="/gallery" class="hover:text-brand-orange transition-colors">Gallery</a>
+        <a href="/search" class="hover:text-brand-orange transition-colors">Search</a>
+        <a href="/contact" class="hover:text-brand-orange transition-colors">Contact</a>
+      </div>
+
+      <!-- Mobile menu button -->
+      <button
+        class="md:hidden p-2 rounded-md hover:bg-brand-red transition-colors"
+        id="mobile-menu-button"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile menu -->
+    <div class="md:hidden mt-4 hidden" id="mobile-menu">
+      <div class="flex flex-col space-y-2">
+        <a href="/" class="px-2 py-1 hover:text-brand-orange transition-colors">Home</a>
+        <a href="/menu" class="px-2 py-1 hover:text-brand-orange transition-colors">Menu</a>
+        <a href="/gallery" class="px-2 py-1 hover:text-brand-orange transition-colors">Gallery</a>
+        <a href="/search" class="px-2 py-1 hover:text-brand-orange transition-colors">Search</a>
+        <a href="/contact" class="px-2 py-1 hover:text-brand-orange transition-colors">Contact</a>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<script>
+  // Mobile menu toggle
+  const button = document.getElementById('mobile-menu-button');
+  const menu = document.getElementById('mobile-menu');
+
+  button?.addEventListener('click', () => {
+    menu?.classList.toggle('hidden');
+  });
+</script>

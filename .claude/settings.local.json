@@ -17,7 +17,14 @@
       "Bash(grep:*)",
       "Bash(npm init:*)",
       "Bash(npm install:*)",
-      "Bash(npx tailwindcss:*)"
+      "Bash(npx tailwindcss:*)",
+      "SlashCommand(/sc:implement \"Create the complete project scaffolding structure with all configuration files, package.json files, directory structure, and starter templates as designed above.\")",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_install",
+      "SlashCommand(/sc:implement:*)"
     ],
     "deny": [],
     "ask": []

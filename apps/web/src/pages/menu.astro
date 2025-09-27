@@ -1,0 +1,31 @@
+---
+import Layout from '@/components/astro/Layout.astro';
+import FirebaseMenu from '@/components/react/FirebaseMenu.tsx';
+---
+
+<Layout title="Menu - 802 Soul Kitchen" description="Explore our delicious soul food menu featuring authentic comfort dishes, sides, and desserts.">
+  <section class="py-16">
+    <div class="container">
+      <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4 text-brand-dark">Our Menu</h1>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          Discover our authentic soul food dishes made with love and tradition
+        </p>
+      </div>
+
+      <!-- Dynamic Menu from Firebase -->
+      <FirebaseMenu client:load />
+
+      <!-- Call to Action -->
+      <div class="text-center mt-12">
+        <div class="bg-brand-dark text-brand-white rounded-lg p-8 max-w-2xl mx-auto">
+          <h2 class="text-2xl font-bold mb-4">Ready to Order?</h2>
+          <p class="mb-6">Call us now to place your order or visit us in person!</p>
+          <a href="tel:+1234567890" class="btn-secondary">
+            Call (123) 456-7890
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,65 @@
+---
+import Layout from '@/components/astro/Layout.astro';
+// import SearchBar from '@/components/react/SearchBar.tsx';
+---
+
+<Layout title="Search - 802 Soul Kitchen" description="Search our menu and find information about 802 Soul Kitchen.">
+  <section class="py-16">
+    <div class="container">
+      <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4 text-brand-dark">Search</h1>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          Find menu items, information, and everything you need to know about 802 Soul Kitchen
+        </p>
+      </div>
+
+      <!-- Placeholder search interface - will be replaced with Pagefind -->
+      <div class="max-w-2xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+          <div class="mb-6">
+            <label for="search-input" class="block text-sm font-medium text-brand-dark mb-2">
+              Search our site
+            </label>
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Search menu items, hours, location..."
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-orange focus:border-transparent"
+            />
+          </div>
+
+          <div class="space-y-4">
+            <h3 class="text-lg font-semibold text-brand-red">Popular Searches</h3>
+            <div class="flex flex-wrap gap-2">
+              <button class="px-3 py-1 bg-gray-100 hover:bg-brand-orange hover:text-white rounded-full text-sm transition-colors">
+                Fried Chicken
+              </button>
+              <button class="px-3 py-1 bg-gray-100 hover:bg-brand-orange hover:text-white rounded-full text-sm transition-colors">
+                Mac & Cheese
+              </button>
+              <button class="px-3 py-1 bg-gray-100 hover:bg-brand-orange hover:text-white rounded-full text-sm transition-colors">
+                Hours
+              </button>
+              <button class="px-3 py-1 bg-gray-100 hover:bg-brand-orange hover:text-white rounded-full text-sm transition-colors">
+                Location
+              </button>
+              <button class="px-3 py-1 bg-gray-100 hover:bg-brand-orange hover:text-white rounded-full text-sm transition-colors">
+                Desserts
+              </button>
+            </div>
+          </div>
+
+          <div class="mt-8 p-4 bg-brand-dark text-brand-white rounded-lg text-center">
+            <p>🔍 Search functionality will be powered by Pagefind</p>
+            <p class="text-sm mt-2 opacity-75">Coming soon in the next development phase</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<!--
+TODO: Implement Pagefind search integration
+<SearchBar client:load />
+-->

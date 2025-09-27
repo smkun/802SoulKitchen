@@ -1,14 +1,50 @@
 {
-  "name": "802soulkitchen",
+  "name": "802-soul-kitchen",
   "version": "1.0.0",
-  "description": "This folder contains development tools and files that are **NOT** needed for website deployment.",
-  "main": "script.js",
+  "description": "802 Soul Kitchen website - Static brochure site with Astro and React islands",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "tools/*"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build-css": "tailwindcss -i input.css -o styles.css --watch",
-    "build": "tailwindcss -i input.css -o styles.css --minify"
+    "dev": "npm run dev --workspace=apps/web",
+    "build": "npm run build --workspace=apps/web",
+    "build:admin": "npm run build --workspace=apps/admin",
+    "test": "npm run test --workspaces --if-present",
+    "test:watch": "npm run test:watch --workspaces --if-present",
+    "lint": "eslint . --ext .ts,.tsx,.astro",
+    "lint:fix": "eslint . --ext .ts,.tsx,.astro --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "type-check": "npm run type-check --workspaces --if-present",
+    "clean": "npm run clean --workspaces --if-present",
+    "setup": "npm install && npm run build --workspace=packages/shared-types"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.50.0",
+    "eslint-plugin-astro": "^0.29.0",
+    "eslint-plugin-react": "^7.33.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.0.0",
+    "prettier-plugin-astro": "^0.12.0",
+    "prettier-plugin-tailwindcss": "^0.5.0",
+    "typescript": "^5.0.0",
+    "vitest": "^3.2.4"
+  },
+  "keywords": [
+    "astro",
+    "restaurant",
+    "static-site",
+    "tailwind"
+  ],
+  "author": "802 Soul Kitchen",
+  "license": "ISC",
+  "dependencies": {
+    "@playwright/test": "^1.55.1",
+    "astro": "5.14.1"
+  }
 }
