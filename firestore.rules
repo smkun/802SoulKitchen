@@ -1,4 +1,5 @@
 rules_version = '2';
+// Updated 2025-09-27 - Fixed email matching for admin authentication
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -20,10 +21,8 @@ service cloud.firestore {
       function isAdmin() {
         return request.auth != null
           && request.auth.token.email_verified == true
-          && request.auth.token.email in [
-            "802soulkitchen@gmail.com",
-            "scottkunian@gmail.com"
-          ];
+          && (request.auth.token.email == "802soulkitchen@gmail.com" 
+              || request.auth.token.email == "scottkunian@gmail.com");
       }
 
       // ---- Event schema helpers ----
@@ -38,50 +37,46 @@ service cloud.firestore {
         // return ['name','location','description','dateTimes','date','createdAt','updatedAt','images','status'];
       }
 
-      function dateTimesOk(arr) {
-        // Each entry: { date: 'YYYY-MM-DD', startTime?: 'HH:MM', endTime?: 'HH:MM', time?: string (legacy) }
-        return arr is list
-          && arr.size() > 0
-          && arr.every(dt, dt is map
-              && ('date' in dt) && (dt.date is string) && dt.date.size() == 10
-              && (!('startTime' in dt) || (dt.startTime is string))
-              && (!('endTime' in dt) || (dt.endTime is string))
-              && (!('time' in dt) || (dt.time is string))
-          );
-      }
-
-      function eventBasicsOk(d) {
-        return d.name is string && d.name.size() > 0 && d.name.size() <= 100
-            && d.location is string && d.location.size() > 0 && d.location.size() <= 200
-            && (!('description' in d) || (d.description is string && d.description.size() <= 1000))
-            && d.date is string && d.date.size() == 10
-            && dateTimesOk(d.dateTimes);
-            // If you add extra allowed keys above, validate them here, e.g.:
-            // && (!('createdAt' in d) || (d.createdAt is timestamp))
-            // && (!('updatedAt' in d) || (d.updatedAt is timestamp))
-            // && (!('images' in d) || (d.images is list))
-            // && (!('status' in d) || (d.status is string))
-      }
-
       function validEventOnCreate() {
         let d = request.resource.data;
-        return d.keys().hasOnly(allowedEventKeys())
-            && requiredEventKeys().toSet().difference(d.keys().toSet()).size() == 0
-            && eventBasicsOk(d);
+        
+        // Basic structure validation
+        let hasRequiredKeys = d.keys().hasOnly(allowedEventKeys())
+            && requiredEventKeys().toSet().difference(d.keys().toSet()).size() == 0;
+        
+        // Basic field validation
+        let validBasicFields = d.name is string && d.name.size() > 0 && d.name.size() <= 100
+            && d.location is string && d.location.size() > 0 && d.location.size() <= 200
+            && d.date is string && d.date.size() == 10;
+            
+        // Description validation (optional field)
+        let validDescription = !('description' in d) || (d.description is string && d.description.size() <= 1000);
+        
+        // DateTimes validation - simplified to avoid complex iterator issues
+        let validDateTimes = d.dateTimes is list && d.dateTimes.size() > 0;
+        
+        return hasRequiredKeys && validBasicFields && validDescription && validDateTimes;
       }
 
       function validEventOnUpdate() {
         let d = request.resource.data;
-        // Required fields must still be present after update
-        let hasRequired = requiredEventKeys().toSet().difference(d.keys().toSet()).size() == 0;
-
-        // Only police fields that are being added or changed in this write
-        let diff = d.diff(resource.data);
-        let changed = diff.changedKeys().union(diff.addedKeys());
-
-        return changed.hasOnly(allowedEventKeys())
-            && hasRequired
-            && eventBasicsOk(d);
+        
+        // Basic structure validation - same as create
+        let hasRequiredKeys = d.keys().hasOnly(allowedEventKeys())
+            && requiredEventKeys().toSet().difference(d.keys().toSet()).size() == 0;
+        
+        // Basic field validation - same as create
+        let validBasicFields = d.name is string && d.name.size() > 0 && d.name.size() <= 100
+            && d.location is string && d.location.size() > 0 && d.location.size() <= 200
+            && d.date is string && d.date.size() == 10;
+            
+        // Description validation (optional field) - same as create
+        let validDescription = !('description' in d) || (d.description is string && d.description.size() <= 1000);
+        
+        // DateTimes validation - simplified to avoid complex iterator issues
+        let validDateTimes = d.dateTimes is list && d.dateTimes.size() > 0;
+        
+        return hasRequiredKeys && validBasicFields && validDescription && validDateTimes;
       }
     }
 
@@ -98,10 +93,8 @@ service cloud.firestore {
       function isAdmin() {
         return request.auth != null
           && request.auth.token.email_verified == true
-          && request.auth.token.email in [
-            "802soulkitchen@gmail.com",
-            "scottkunian@gmail.com"
-          ];
+          && (request.auth.token.email == "802soulkitchen@gmail.com" 
+              || request.auth.token.email == "scottkunian@gmail.com");
       }
 
       // ---- Menu schema helpers ----

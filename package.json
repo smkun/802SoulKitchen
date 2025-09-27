@@ -20,7 +20,11 @@
     "format:check": "prettier --check .",
     "type-check": "npm run type-check --workspaces --if-present",
     "clean": "npm run clean --workspaces --if-present",
-    "setup": "npm install && npm run build --workspace=packages/shared-types"
+    "setup": "npm install && npm run build --workspace=packages/shared-types",
+    "firebase:deploy:rules": "firebase deploy --only firestore:rules",
+    "firebase:deploy": "firebase deploy",
+    "firebase:status": "./scripts/firebase-status.sh",
+    "firebase:emulators": "firebase emulators:start"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.0.0",

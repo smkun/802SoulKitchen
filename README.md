@@ -4,7 +4,7 @@ A fast, static brochure website built with Astro, Tailwind CSS, and React island
 
 ## 🏗️ Project Structure
 
-```
+```text
 802SoulKitchen/
 ├── apps/
 │   └── web/                 # Main Astro application
@@ -62,14 +62,14 @@ npm run build
 
 ## 📦 Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run test` | Run tests |
-| `npm run lint` | Run ESLint |
-| `npm run format` | Format code with Prettier |
-| `npm run type-check` | Check TypeScript types |
+| Script               | Description               |
+| -------------------- | ------------------------- |
+| `npm run dev`        | Start development server  |
+| `npm run build`      | Build for production      |
+| `npm run test`       | Run tests                 |
+| `npm run lint`       | Run ESLint                |
+| `npm run format`     | Format code with Prettier |
+| `npm run type-check` | Check TypeScript types    |
 
 ## 🏛️ Architecture
 
@@ -94,10 +94,7 @@ npm run build
 ### Brand Colors
 
 ```css
---brand-white: #fdfcfd
---brand-red: #da2c2b
---brand-orange: #f38c2c
---brand-dark: #060b22
+--brand-white: #fdfcfd --brand-red: #da2c2b --brand-orange: #f38c2c --brand-dark: #060b22;
 ```
 
 ## 📄 Pages
@@ -111,11 +108,13 @@ npm run build
 ## 🧩 Components
 
 ### Astro Components
+
 - `Layout.astro`: Base page layout
 - `Header.astro`: Navigation and logo
 - `Footer.astro`: Contact info and links
 
 ### React Islands (Future)
+
 - `Gallery.tsx`: Interactive photo gallery
 - `MenuList.tsx`: Searchable menu with Fuse.js
 - `SearchBar.tsx`: Pagefind search interface
@@ -146,6 +145,7 @@ PUBLIC_FIREBASE_PROJECT_ID=
 ### CI/CD
 
 GitHub Actions automatically:
+
 - Runs tests and quality checks on PRs
 - Builds deployment packages on main branch
 - Runs Lighthouse performance audits
