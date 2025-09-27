@@ -24,7 +24,8 @@
       "Bash(curl:*)",
       "mcp__playwright__browser_navigate",
       "mcp__playwright__browser_install",
-      "SlashCommand(/sc:implement:*)"
+      "SlashCommand(/sc:implement:*)",
+      "Bash(mv:*)"
     ],
     "deny": [],
     "ask": []
